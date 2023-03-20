@@ -87,7 +87,7 @@ void fcn(int i);
 
 不同函数的形参列表应该有明显区别。这两个同名fcn函数传入的参数可以完全一样，会报错。
 
-使用范围for便利对象时，若要修改其中元素，应该用auto &item去实现获取元素，才能使修改生效
+使用范围for便利对象时，若要修改其中元素，应该用auto &item去实现获取元素，才能使修改生效。
 
 
 
@@ -95,7 +95,171 @@ void fcn(int i);
 
 
 
+### 6.2.5 main处理命令行选项
+
+main函数可以接受两个形参                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+
+```c++
+int main(int argc, char * argv[])
+```
+
+传递给main函数形参的方法是，先生成exe文件。然后在对应目录打开cmd控制台，输入exe文件的名字 <传递的第一个字符串> <传递的第二个字符串> ...。
+
+这些字符串会从下标1开始，依次存放到argv数组里。
+
+### 6.2.6 含有可变形参的函数
+
+initializer_list只能传递常量值，不能传递String对象等非常量值。
+
+``` c++
+int add(initializer_list<int> lst) {
+	int val = 0;
+	for (auto i = lst.begin(); i != lst.end(); i++) {
+		val += *i;
+	}
+	return val;
+}
+int main(int argc, char* argv[]) {
+	int val = add({ 15,20,35 });
+	cout << val << '\n';
+}
+```
+
+ ## 6.3 返回类型与return语句
+
+### 6.3.1 无返回值函数
+
+返回类型是void的函数可以return <另一个返回值是void的函数>。
+
+### 6.3.2 有返回值函数
+
+### 6.3.3 返回数组指针
+
+尾置返回类型
+
+```c++
+auto fan(int a, int b) -> int {
+	return a + b;
+}
+```
+
+```c++
+int odd[] = { 1,3,5,7,9 };
+int even[] = { 2,4,6,8,10};
+decltype(odd) *arrPtr(int i) {
+	return i % 2 ? &odd : &even;
+}
+```
+
+decltype(odd) 指明返回类型是5个长度的数组，*arrPtr表示返回的是指针。
+
+return &odd &even 表示返回的是哪个具体数组的指针。
+
+## 6.4 函数重载
+
+main函数不能重载。
+
+**二义性调用**：在编译器调用重载函数时有多于一个函数可以匹配，但每一个都不是明显的最佳选择。
+
+## 6.5 特殊用途语言特性
+
+### 6.5.1 默认实参
+
+```c++
+string screen(sz ht = 24,sz wid = 80,char background = ' ');
+```
+
+默认实参作为形参的初始值出现在形参列表中。
+
+**一旦某个形参有了默认值，它后面的所有形参都必须有默认值。**
+
+设计含有默认实参的函数时，有默认实参的形参尽量往后放。
+
+通常在声明函数时定义默认实参，并放在头文件中。
+
+**用作默认实参的名字在函数声明的作用域内寻找**
+
+```c++
+int wd = 80;
+string screen(int a = wd);
+void f(){
+    int wd = 100;
+    window = screen();//调用screen(80),而不是screen(100)
+}
+```
 
 
 
+### 6.5.2 内联函数和constexpr函数
 
+在函数的返回类型前面加上关键字 inline声明为内联函数。内联函数在程序内直接展开，可省去函数调用的开支。
+
+constexpr函数用来检查函数返回值是否是常量，如果不是常量编译器会检查报错。
+
+inline和constexpr一般声明在头文件内
+
+**用constexpr修饰的函数其函数体内不能包含任何执行操作的语句**
+
+```c++
+constexpr const int isShorter(const string& s1, const string& s2) {
+	return s1.size() < s2.size();//包含了size（）函数，所以编译器报错
+}
+```
+
+### 6.5.3 调试帮助
+
+**assert断言的用法：**
+
+计算表达式的值是否为0，为0就打印报错信息，否则什么也不做
+
+```c++
+#define NDEBUG//添加这句话可以禁用assert的调试作用
+#include<cassert>//需要添加这个头文件
+int main(){
+    int a = 0,b = 1;
+    assert(a==b);
+    //当表达式的值为0时跳出报错，否则什么也不做;
+}
+```
+
+
+
+注意事项：
+
+1. 使用assert的缺点是，频繁的调用会极大的影响程序的性能，增加额外的开销。
+2. 断言语句不会永远被执行，assert不管是在屏蔽还是启用状态下都不能对我们本身代码有所影响
+3. 程序一般分为Debug 版本和Release 版本，Debug 版本用于内部调试，Release 版本发行给用户使用。断言assert 是仅在Debug 版本起作用的宏，它用于检查"不应该"发生的情况。
+
+使用规则：
+
+1. 每个assert只检验一个条件，因为同时检验多个条件时，如果断言失败，我们就无法直观的判断哪个条件失败；
+
+   无法直观的判断哪个条件失败：
+
+   ```c++
+   assert(nOffset>=0 && nOffset+nSize<=m_nInfomationSize);
+   ```
+
+   只检验一个条件，比较直观：
+
+   ```c++
+   assert(nOffset >= 0); 
+   assert(nOffset+nSize <= m_nInfomationSize);
+   ```
+
+2. 不能使用改变环境的语句,在实际编写代码的过程中是不能这样做的；
+
+   例如：
+
+   ```text
+   assert(i++ < 100)
+   ```
+
+   不好：这是因为如果出错，比如在执行之前i=100,那么这条语句就不会执行，那么i++这条命令就没有执行。
+
+   ```text
+   assert(i < 100)
+   i++;
+   ```
+
+3. 放在函数参数的入口处检查传入参数的合法性；
