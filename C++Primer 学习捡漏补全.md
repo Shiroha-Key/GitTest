@@ -263,3 +263,36 @@ int main(){
    ```
 
 3. 放在函数参数的入口处检查传入参数的合法性；qwq
+
+### 6.6.1 实参类型转换
+
+```c++
+void manip(long);
+void manip(float);
+double a = 3.14;
+manip(a);//该调用具有二义性，因为既能转float又能转long
+//所有算数类型转换的级别都一样，从int向longlong转换并不比从int向double转换的转换级别高
+```
+
+### 6.7 函数指针
+
+```c++
+bool lengthCompare(const string &,const string &)
+bool (*pf)(const string &,const string &)//pf指向一个函数，pf是一个指针
+    
+pf = lengthCompare //pf指向名为lengthCompare的函数
+pf = &lengthCompare //取地址符是可选的，这两条语句是等价的，都是返回该函数的地址
+    
+bool b1 = pf("hello","goodbye");//调用函数
+bool b2 = (*pf)("hello","goodbye")//等价的调用
+bool b3 = lengthCompare("hello","goodbye")//另一个等价的调用
+```
+
+
+
+## 7 类
+
+### 7.1 定义抽象数据类型
+
+
+
