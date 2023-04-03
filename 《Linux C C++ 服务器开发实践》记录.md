@@ -35,7 +35,77 @@
 3. 网络层在数据段前**加上自身ip和目的ip**（IP报头），将这个ip数据报发给网络接口层。
 4. 网络接口层在ip数据包前加上**自身MAC地址和目的MAC地址**，将组成好的**帧以比特流的方式发送到网络**
 
+接收方：
 
+1. 网络接口层接受到帧，**去掉mac地址**，再把ip数据报传给网络层
+2. 网络层**去掉IP**，将TCP数据段交给传输层
+3. 传输层接受数据段，**看到TCP标记的端口为80**，说明是HTTP协议，并将数据传给应用层
+4. 应用层**看到**是HTTP协议的数据，**就调用**Web服务器程序，发送首页回去。
+
+### 1.2 应用层
+
+主要协议：
+
+1. FTP：上网下载文件
+2. HTTP：上网浏览网页
+3. DNS服务：将域名解析为IP地址
+4. SMTP,POP3:收发电子邮件
+
+#### 1.2.1 域名
+
+​	先查找本地域名服务器；
+
+​	能解析：返回结果。
+
+​	不能解析：依次向上查询根服务器的域名，直到能解析为止。
+
+#### 1.2.2 端口
+
+IP地址用来查找通信目标的主机，而端口地址就是用来**标记目标程序**
+
+如果把IP地址比作旅馆的地址，端口就是某个房间的房号
+
+端口号是16位无符号整数 范围从0到2^16-1，前面1024个端口号留作操作系统使用。
+
+### 1.3 传输层
+
+TCP协议：一对一，面向连接，对发送的数据报进行排序和确认，并恢复在传输过程中丢失的数据报
+
+UDP协议：一对一或一对多，不可靠的高速通信服务
+
+#### 1.3.1 TCP协议
+
+TCP是面向连接，保证可靠（数据无丢失，无乱序，无错误，无重复到达）的传输层协议。
+
+**用C语言定义TCP报头**:
+
+```c++
+typedef struct _TCP_HEADER{
+    short sSourPort; //源端口号16bit
+   	short sDestPort; //目的端口号16bit
+    unsigned int uiSequNum; //序列号32bit
+    unsigned int uiAcknowledgeNum; //确认号32bit
+    short sHeaderLenAndFlag; //前四位：TCP头长度，中间保留六位，后六为：标志位
+    short sWindowSize; //窗口大小16bit
+    short sCheckSum; //检验和16bit
+    short surgentPointer; //紧急数据偏移量16bit
+}TCP_HEADER,*PTCP_HEADER
+```
+
+#### 1.3.2 UDP协议
+
+UDP是无连接，不可靠的传输层协议
+
+用C语言定义UDP报头：
+
+```c++
+typedef struct _UDP_HEADER{
+    short m_usSourPort;//源端口号16bit
+    short m_usDestPort;//目的端口号16bit
+    short m_usLength; //数据报长度16bit
+    short m_usCheckSum; //校验和16bit
+}UDP_HEADER,*PUDP_HEADER
+```
 
 
 
