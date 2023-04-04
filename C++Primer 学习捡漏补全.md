@@ -294,5 +294,14 @@ bool b3 = lengthCompare("hello","goodbye")//另一个等价的调用
 
 ### 7.1 定义抽象数据类型
 
+类外部定义成员函数：
+
+```c++
+double Sale_data::avg_Price() const{ 
+    // 需要包含这个函数所属的类名，如这里的Sale_data
+    return revenue;//这里的revenue是调用了作用域Sale_data中的变量
+}
+```
+
 
 
