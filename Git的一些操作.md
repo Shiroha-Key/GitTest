@@ -161,3 +161,13 @@ git revert <旧提交的hash>
 git reflog
 ```
 
+**push卡住的问题**
+
+添加**sendpack.sideband**属性并置为false就解决了。
+
+全局的：git config --global sendpack.sideband false
+
+仓库的：git config --local sendpack.sideband false
+
+git config --global --unset http.proxy
+git config --global --unset https.proxy
